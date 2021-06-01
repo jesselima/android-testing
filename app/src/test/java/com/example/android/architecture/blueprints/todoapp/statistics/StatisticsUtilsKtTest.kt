@@ -1,6 +1,8 @@
 package com.example.android.architecture.blueprints.todoapp.statistics
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -62,6 +64,36 @@ class StatisticsUtilsKtTest {
         // Then
         assertEquals(0f, result.completedTasksPercent)
         assertEquals(0f, result.activeTasksPercent)
+    }
+
+    /**
+     * Using Hamcrest assertions
+     */
+
+    @Test
+    fun getActiveAndCompletedStats_empty_returnZeros_withhamCrest() {
+        // Given
+        val tasks = emptyList<Task>()
+
+        // When
+        val result = getActiveAndCompletedStats(tasks)
+
+        // Then
+        assertThat(result.completedTasksPercent, `is`(0f))
+        assertThat(result.activeTasksPercent, `is`(0f))
+    }
+
+    @Test
+    fun getActiveAndCompletedStats_error_returnZeros_withHamcrestAssertions() {
+        // Given
+        val tasks = null
+
+        // When
+        val result = getActiveAndCompletedStats(tasks)
+
+        // Then
+        assertThat(result.completedTasksPercent, `is`(0f))
+        assertThat(result.activeTasksPercent, `is`(0f))
     }
 
 }
