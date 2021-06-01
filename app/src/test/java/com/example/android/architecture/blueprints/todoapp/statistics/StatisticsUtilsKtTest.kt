@@ -38,4 +38,30 @@ class StatisticsUtilsKtTest {
         assertEquals(60f, result.activeTasksPercent)
     }
 
+    @Test
+    fun getActiveAndCompletedStats_empty_returnZeros() {
+        // Given
+        val tasks = emptyList<Task>()
+
+        // When
+        val result = getActiveAndCompletedStats(tasks)
+
+        // Then
+        assertEquals(0f, result.completedTasksPercent)
+        assertEquals(0f, result.activeTasksPercent)
+    }
+
+    @Test
+    fun getActiveAndCompletedStats_error_returnZeros() {
+        // Given
+        val tasks = null
+
+        // When
+        val result = getActiveAndCompletedStats(tasks)
+
+        // Then
+        assertEquals(0f, result.completedTasksPercent)
+        assertEquals(0f, result.activeTasksPercent)
+    }
+
 }
