@@ -58,7 +58,14 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
     // Dependencies for local unit tests
+    // Used for Junit Runner
     testImplementation "junit:junit:$junitVersion"
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.2'
+    // Code for androidx core tests and access to the context in the tests
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    // Helps to write more human readable tests
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
 
     // AndroidX Test - Instrumented testing
