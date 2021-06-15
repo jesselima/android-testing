@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.android.architecture.blueprints.todoapp.Event
+import com.example.android.architecture.blueprints.todoapp.getOrAwaitValue
 import junit.framework.TestCase
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.CoreMatchers.nullValue
@@ -33,29 +34,17 @@ class TasksViewModelTest : TestCase() {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-
     @Test
     fun addNewTask_setsNewTaskEvent() {
         // Given... a fresh viewModel instance
         // The context here is provided by the androidx.test.core.app.ApplicationProvider
         val taskViewModel = TasksViewModel(ApplicationProvider.getApplicationContext())
 
-        // Create a observer - no need for it to do anything
-        val observer = Observer<Event<Unit>> {}
+        // When new task event is triggered
+        taskViewModel.addNewTask()
 
-        try {
-            // Observe the LiveData forever
-            taskViewModel.newTaskEvent.observeForever(observer)
-
-            // When adding a new task event is triggered
-            taskViewModel.addNewTask()
-
-            // Then new task event is triggered
-            val value = taskViewModel.newTaskEvent.value
-            assertThat(value?.getContentIfNotHandled(), (not(nullValue())))
-
-        } finally {
-            taskViewModel.newTaskEvent.removeObserver(observer)
-        }
+        // Then
+        val value = taskViewModel.newTaskEvent.getOrAwaitValue()
+        assertThat(value.getContentIfNotHandled(), (not(nullValue())))
     }
 }
