@@ -68,6 +68,9 @@ dependencies {
     // Helps to write more human readable tests
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
 
+    // Dependency required for coroutines unit tests. (runBlocking comes from it :D))
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
     // AndroidX Test - Instrumented testing
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
