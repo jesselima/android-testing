@@ -1,15 +1,17 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.android.architecture.blueprints.todoapp.data.Task
+import com.example.android.architecture.blueprints.todoapp.data.source.FakeTaskRepository
 import com.example.android.architecture.blueprints.todoapp.getOrAwaitValue
 import junit.framework.TestCase
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /**
  * The ViewModel logic code should not rely on the Android Framework or in the Operating System
@@ -17,9 +19,25 @@ import org.junit.runner.RunWith
 /**
  * The test runner is a component to run tests. This @RunWith annotation force to not to use the
  * default runner and to use that one defined by you.
+ *
+ * We need @RunWith(AndroidJUnit4::class) only when using AndroidTest code. By now the ViewModel to
+ * receive a Application instance on it's constructor
  */
-@RunWith(AndroidJUnit4::class)
+@RunWith(JUnit4::class)
 class TasksViewModelTest : TestCase() {
+
+    private lateinit var taskRepository: FakeTaskRepository
+    private lateinit var taskViewModel: TasksViewModel
+
+    @Before
+    fun setupViewModel() {
+        taskRepository = FakeTaskRepository().apply {
+            addTasks(Task("Title 1", "Description1"))
+            addTasks(Task("Title 1", "Description1", true))
+            addTasks(Task("Title 1", "Description1", true))
+        }
+        taskViewModel = TasksViewModel(tasksRepository = taskRepository)
+    }
 
     /**
      * JUnit rules are classes that allow you to define some code that runs before and after each
@@ -33,10 +51,6 @@ class TasksViewModelTest : TestCase() {
 
     @Test
     fun addNewTask_setsNewTaskEvent() {
-        // Given... a fresh viewModel instance
-        // The context here is provided by the androidx.test.core.app.ApplicationProvider
-        val taskViewModel = TasksViewModel(ApplicationProvider.getApplicationContext())
-
         // When new task event is triggered
         taskViewModel.addNewTask()
 
@@ -47,9 +61,6 @@ class TasksViewModelTest : TestCase() {
 
     @Test
     fun setFilterAllTasks_tasksAddViewVisible() {
-        // Given a fresh ViewModel
-        val taskViewModel = TasksViewModel(ApplicationProvider.getApplicationContext())
-
         // When the filter type is ALL_TASKS
         taskViewModel.setFiltering(requestType = TasksFilterType.ALL_TASKS)
 
