@@ -71,11 +71,11 @@ class DefaultTasksRepository constructor(
         updateTasksFromRemoteDataSource()
     }
 
-    fun observeTasks(): LiveData<Result<List<Task>>> {
+    override fun observeTasks(): LiveData<Result<List<Task>>> {
         return tasksLocalDataSource.observeTasks()
     }
 
-    suspend fun refreshTask(taskId: String) {
+    override suspend fun refreshTask(taskId: String) {
         updateTaskFromRemoteDataSource(taskId)
     }
 
@@ -93,7 +93,7 @@ class DefaultTasksRepository constructor(
         }
     }
 
-    fun observeTask(taskId: String): LiveData<Result<Task>> {
+    override fun observeTask(taskId: String): LiveData<Result<Task>> {
         return tasksLocalDataSource.observeTask(taskId)
     }
 
