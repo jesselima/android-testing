@@ -24,7 +24,7 @@ object ServiceLocator {
 
     /**
      * This method can never create a repository twice. It may happen if the call can be accessed
-     * by multiple threads. To avoid this we use the syncronized key word.
+     * by multiple threads. To avoid this we use the synchronized key word.
      */
     fun providerTaskRepository(context: Context) : TasksRepository {
         synchronized(this) {
