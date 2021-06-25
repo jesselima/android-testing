@@ -1,6 +1,7 @@
 package com.example.android.architecture.blueprints.todoapp
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
@@ -8,8 +9,11 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepo
 import com.example.android.architecture.blueprints.todoapp.data.source.local.TasksLocalDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.local.ToDoDatabase
 import com.example.android.architecture.blueprints.todoapp.data.source.remote.TasksRemoteDataSource
+import kotlinx.coroutines.runBlocking
 
 object ServiceLocator {
+
+    private val lock = Any()
 
     private var database: ToDoDatabase? = null
 
@@ -21,6 +25,13 @@ object ServiceLocator {
      */
     @Volatile
     var tasksRepository: TasksRepository? = null
+        @VisibleForTesting set
+    /**
+     * Visible For Testing is a way to express that the reason that a certain method or object is
+     * public, is because of testing.
+     * Basically, in a normal code I should basically never be calling this set method,
+     * but in my testing code I will be.
+     */
 
     /**
      * This method can never create a repository twice. It may happen if the call can be accessed
@@ -52,5 +63,21 @@ object ServiceLocator {
         database = databaseCreationResult
         return databaseCreationResult
     }
+
+    @VisibleForTesting
+    fun resetRepository() {
+        synchronized(lock) {
+            runBlocking {
+                TasksRemoteDataSource.deleteAllTasks()
+            }
+            database?.apply {
+                clearAllTables()
+                close()
+            }
+            database = null
+            tasksRepository = null
+        }
+    }
+
 
 }
