@@ -110,6 +110,15 @@ dependencies {
      */
     androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
 
+    // Mockito
+    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
+    /**
+     * Mockito needs to generate classes at runtime.
+     * On Android, this is done using something called DEX bytecode.
+     * So this library here enables Mockito to generate objects during runtime on Android.
+     */
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
+
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"

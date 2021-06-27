@@ -89,7 +89,7 @@ class TasksFragment : Fragment() {
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         setupSnackbar()
         setupListAdapter()
-        setupRefreshLayout(viewDataBinding.refreshLayout, viewDataBinding.tasksList)
+        setupRefreshLayout(viewDataBinding.refreshLayout, viewDataBinding.recyclerViewTasksList)
         setupNavigation()
         setupFab()
     }
@@ -155,7 +155,7 @@ class TasksFragment : Fragment() {
         val viewModel = viewDataBinding.viewmodel
         if (viewModel != null) {
             listAdapter = TasksAdapter(viewModel)
-            viewDataBinding.tasksList.adapter = listAdapter
+            viewDataBinding.recyclerViewTasksList.adapter = listAdapter
         } else {
             Timber.w("ViewModel not initialized when attempting to set up adapter.")
         }
