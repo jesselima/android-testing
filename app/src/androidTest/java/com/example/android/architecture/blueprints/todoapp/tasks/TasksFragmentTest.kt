@@ -1,10 +1,12 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -79,6 +81,26 @@ class TasksFragmentTest {
         // THEN
         verify(navController).navigate(
             TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment("id1")
+        )
+    }
+
+    @Test
+    fun click_add_task_Button_should_navigate_to_add_edit_fragment() {
+        // GIVEN - On the home screen
+        val scenario = launchFragmentInContainer<TasksFragment>(Bundle(), R.style.AppTheme)
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.view!!, navController)
+        }
+
+        // WHEN - Click on the "+" button
+        onView(withId(R.id.add_task_fab)).perform(click())
+
+        // THEN - Verify that we navigate to the add screen
+        verify(navController).navigate(
+            TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
+                null, ApplicationProvider.getApplicationContext<Context>().getString(R.string.add_task)
+            )
         )
     }
 
