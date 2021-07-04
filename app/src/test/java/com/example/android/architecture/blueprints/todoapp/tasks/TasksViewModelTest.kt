@@ -2,29 +2,27 @@ package com.example.android.architecture.blueprints.todoapp.tasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.android.architecture.blueprints.todoapp.Event
+import com.example.android.architecture.blueprints.todoapp.MainCoroutineRule
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.FakeTaskRepository
 import com.example.android.architecture.blueprints.todoapp.getOrAwaitValue
 import junit.framework.TestCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.not
+import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
+
 /**
  * The ViewModel logic code should not rely on the Android Framework or in the Operating System
- */
-/**
+ *
  * The test runner is a component to run tests. This @RunWith annotation force to not to use the
  * default runner and to use that one defined by you.
  *
@@ -35,40 +33,20 @@ import org.junit.runners.JUnit4
 @ExperimentalCoroutinesApi
 class TasksViewModelTest : TestCase() {
 
-    private val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var taskRepository: FakeTaskRepository
     private lateinit var taskViewModel: TasksViewModel
 
     @Before
     fun setupViewModel() {
-
-        Dispatchers.setMain(dispatcher = testDispatcher)
-
         taskRepository = FakeTaskRepository().apply {
             addTasks(Task("Title 1", "Description1"))
             addTasks(Task("Title 1", "Description1", true))
             addTasks(Task("Title 1", "Description1", true))
         }
         taskViewModel = TasksViewModel(tasksRepository = taskRepository)
-    }
-
-    @After
-    fun tearDownDispatchers() {
-        /**
-         * Resets state of the [Dispatchers.Main] to the original main dispatcher.
-         * For example, in Android Main thread dispatcher will be set as [Dispatchers.Main].
-         * Used to clean up all possible dependencies, should be used in tear down (`@After`) methods.
-         *
-         * It is unsafe to call this method if alive coroutines launched in [Dispatchers.Main] exist.
-         */
-        Dispatchers.resetMain()
-        /**
-         * Call after test code completes to ensure that the dispatcher is properly cleaned up.
-         * @throws 'UncompletedCoroutinesError' if any pending tasks are active, however it will not
-         * throw for suspended coroutines.
-         */
-        testDispatcher.cleanupTestCoroutines()
     }
 
     /**
