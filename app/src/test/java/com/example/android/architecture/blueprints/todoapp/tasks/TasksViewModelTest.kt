@@ -1,12 +1,20 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.android.architecture.blueprints.todoapp.Event
+import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.FakeTaskRepository
 import com.example.android.architecture.blueprints.todoapp.getOrAwaitValue
 import junit.framework.TestCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,19 +32,43 @@ import org.junit.runners.JUnit4
  * receive a Application instance on it's constructor
  */
 @RunWith(JUnit4::class)
+@ExperimentalCoroutinesApi
 class TasksViewModelTest : TestCase() {
+
+    private val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 
     private lateinit var taskRepository: FakeTaskRepository
     private lateinit var taskViewModel: TasksViewModel
 
     @Before
     fun setupViewModel() {
+
+        Dispatchers.setMain(dispatcher = testDispatcher)
+
         taskRepository = FakeTaskRepository().apply {
             addTasks(Task("Title 1", "Description1"))
             addTasks(Task("Title 1", "Description1", true))
             addTasks(Task("Title 1", "Description1", true))
         }
         taskViewModel = TasksViewModel(tasksRepository = taskRepository)
+    }
+
+    @After
+    fun tearDownDispatchers() {
+        /**
+         * Resets state of the [Dispatchers.Main] to the original main dispatcher.
+         * For example, in Android Main thread dispatcher will be set as [Dispatchers.Main].
+         * Used to clean up all possible dependencies, should be used in tear down (`@After`) methods.
+         *
+         * It is unsafe to call this method if alive coroutines launched in [Dispatchers.Main] exist.
+         */
+        Dispatchers.resetMain()
+        /**
+         * Call after test code completes to ensure that the dispatcher is properly cleaned up.
+         * @throws 'UncompletedCoroutinesError' if any pending tasks are active, however it will not
+         * throw for suspended coroutines.
+         */
+        testDispatcher.cleanupTestCoroutines()
     }
 
     /**
@@ -66,5 +98,19 @@ class TasksViewModelTest : TestCase() {
 
         // Then the "Add task" action is visible
         assertThat(taskViewModel.tasksAddViewVisible.getOrAwaitValue(), `is`(true))
+    }
+
+    @Test
+    fun completedTask_dataAndSnackBar() {
+        val task = Task("Title", "Description")
+        taskRepository.addTasks(task)
+
+        taskViewModel.completeTask(task, true)
+
+        assertThat(taskRepository.tasksServiceData[task.id]?.isCompleted, `is`(true))
+
+        val snackBarText: Event<Int> = taskViewModel.snackbarText.getOrAwaitValue()
+        assertThat(snackBarText.getContentIfNotHandled(), `is`(R.string.task_marked_complete))
+
     }
 }
