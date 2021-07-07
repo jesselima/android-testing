@@ -10,14 +10,14 @@ import java.util.LinkedHashMap
 
 class FakeTaskRepository: TasksRepository {
 
-    var tasksServiceData: LinkedHashMap<String, Task> = LinkedHashMap()
-
     private var shouldReturnError = false
+
+    var tasksServiceData: LinkedHashMap<String, Task> = LinkedHashMap()
 
     private val observableTasks = MutableLiveData<Result<List<Task>>>()
 
-    fun setReturnError(value: Boolean) {
-        shouldReturnError = value
+    fun setReturnError(returnError: Boolean) {
+        shouldReturnError = returnError
     }
 
     override suspend fun refreshTasks() {

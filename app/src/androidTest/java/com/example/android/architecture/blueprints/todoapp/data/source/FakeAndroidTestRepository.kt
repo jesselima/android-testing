@@ -13,14 +13,14 @@ import java.util.LinkedHashMap
  */
 class FakeAndroidTestRepository: TasksRepository {
 
-    var tasksServiceData: LinkedHashMap<String, Task> = LinkedHashMap()
-
     private var shouldReturnError = false
+
+    var tasksServiceData: LinkedHashMap<String, Task> = LinkedHashMap()
 
     private val observableTasks = MutableLiveData<Result<List<Task>>>()
 
-    fun setReturnError(value: Boolean) {
-        shouldReturnError = value
+    fun setReturnError(returnError: Boolean) {
+        shouldReturnError = returnError
     }
 
     override suspend fun refreshTasks() {
@@ -53,7 +53,7 @@ class FakeAndroidTestRepository: TasksRepository {
 
     override suspend fun getTask(taskId: String, forceUpdate: Boolean): Result<Task> {
         if (shouldReturnError) {
-            return Result.Error(Exception("Test exception"))
+            return Result.Error(Exception("Test Exception"))
         }
         tasksServiceData[taskId]?.let {
             return Result.Success(it)
@@ -63,7 +63,7 @@ class FakeAndroidTestRepository: TasksRepository {
 
     override suspend fun getTasks(forceUpdate: Boolean): Result<List<Task>> {
         if (shouldReturnError) {
-            return Result.Error(Exception("Test exception"))
+            return Result.Error(Exception("Test Exception"))
         }
         return Result.Success(tasksServiceData.values.toList())
     }
