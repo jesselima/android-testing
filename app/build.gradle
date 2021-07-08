@@ -119,6 +119,9 @@ dependencies {
      */
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
 
+    // Used to test Room but not limited to it.
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
