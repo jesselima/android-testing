@@ -1,0 +1,37 @@
+package com.example.android.architecture.blueprints.todoapp.util
+
+import androidx.test.espresso.idling.CountingIdlingResource
+
+object EspressoIdlingResource {
+
+    private const val RESOURCE = "GLOBAL"
+
+    /**
+     * The CountingIdlingResource class is part of androidx.test.espresso.idling
+     */
+    @JvmField
+    val countingIdlingResource = CountingIdlingResource(RESOURCE)
+
+    fun increment() {
+        countingIdlingResource.increment()
+    }
+
+    fun decrement() {
+        if (countingIdlingResource.isIdleNow) {
+            countingIdlingResource.decrement()
+        }
+    }
+}
+
+inline fun <T> wrapEspressoIdlingResource(function: () -> T): T {
+    // Espresso does not work well with coroutines yet. See
+    // https://github.com/Kotlin/kotlinx.coroutines/issues/982
+    // Set the App as busy
+    EspressoIdlingResource.increment()
+    return try {
+        function()
+    } finally {
+        // Set app as idle.
+        EspressoIdlingResource.decrement()
+    }
+}
