@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
  */
 class TasksLocalDataSource internal constructor(
     private val tasksDao: TasksDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TasksDataSource {
 
     override fun observeTasks(): LiveData<Result<List<Task>>> {
@@ -54,7 +54,7 @@ class TasksLocalDataSource internal constructor(
         //NO-OP
     }
 
-    override suspend fun getTasks(): Result<List<Task>> = withContext(ioDispatcher) {
+    override suspend fun getTasks(): Result<List<Task>> = withContext(dispatcher) {
         return@withContext try {
             Success(tasksDao.getTasks())
         } catch (e: Exception) {
@@ -62,7 +62,7 @@ class TasksLocalDataSource internal constructor(
         }
     }
 
-    override suspend fun getTask(taskId: String): Result<Task> = withContext(ioDispatcher) {
+    override suspend fun getTask(taskId: String): Result<Task> = withContext(dispatcher) {
         try {
             val task = tasksDao.getTaskById(taskId)
             if (task != null) {
@@ -75,11 +75,11 @@ class TasksLocalDataSource internal constructor(
         }
     }
 
-    override suspend fun saveTask(task: Task) = withContext(ioDispatcher) {
+    override suspend fun saveTask(task: Task) = withContext(dispatcher) {
         tasksDao.insertTask(task)
     }
 
-    override suspend fun completeTask(task: Task) = withContext(ioDispatcher) {
+    override suspend fun completeTask(task: Task) = withContext(dispatcher) {
         tasksDao.updateCompleted(task.id, true)
     }
 
@@ -87,7 +87,7 @@ class TasksLocalDataSource internal constructor(
         tasksDao.updateCompleted(taskId, true)
     }
 
-    override suspend fun activateTask(task: Task) = withContext(ioDispatcher) {
+    override suspend fun activateTask(task: Task) = withContext(dispatcher) {
         tasksDao.updateCompleted(task.id, false)
     }
 
@@ -95,15 +95,15 @@ class TasksLocalDataSource internal constructor(
         tasksDao.updateCompleted(taskId, false)
     }
 
-    override suspend fun clearCompletedTasks() = withContext<Unit>(ioDispatcher) {
+    override suspend fun clearCompletedTasks() = withContext<Unit>(dispatcher) {
         tasksDao.deleteCompletedTasks()
     }
 
-    override suspend fun deleteAllTasks() = withContext(ioDispatcher) {
+    override suspend fun deleteAllTasks() = withContext(dispatcher) {
         tasksDao.deleteTasks()
     }
 
-    override suspend fun deleteTask(taskId: String) = withContext<Unit>(ioDispatcher) {
+    override suspend fun deleteTask(taskId: String) = withContext<Unit>(dispatcher) {
         tasksDao.deleteTaskById(taskId)
     }
 }
