@@ -130,7 +130,7 @@ class TasksFragment : Fragment() {
     }
 
     private fun setupFab() {
-        activity?.findViewById<FloatingActionButton>(R.id.add_task_fab)?.let {
+        viewDataBinding.addTaskFab.let {
             it.setOnClickListener {
                 navigateToAddNewTask()
             }
