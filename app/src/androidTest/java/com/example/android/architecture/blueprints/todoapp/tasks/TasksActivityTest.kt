@@ -3,6 +3,7 @@ package com.example.android.architecture.blueprints.todoapp.tasks
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -17,6 +18,9 @@ import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.ServiceLocator
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
+import com.example.android.architecture.blueprints.todoapp.util.DatabindingIdlingResource
+import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
+import com.example.android.architecture.blueprints.todoapp.util.monitorActivity
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
@@ -46,12 +50,26 @@ class TasksActivityTest {
         ServiceLocator.resetRepository()
     }
 
+    private val databindingIdlingResource = DatabindingIdlingResource()
+
+    @Before
+    fun registerIdlingResource() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().register(databindingIdlingResource)
+    }
+
+    @After
+    fun unRegisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().unregister(databindingIdlingResource)
+    }
 
     @Test
     fun editTest() = runBlocking {
         tasksRepository.saveTask(Task("TITLE1", "DESCRIPTION"))
 
         val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        databindingIdlingResource.monitorActivity(activityScenario)
 
         // Runs espresso code
         // Click on the task on the list and verify that all the data is correct.
@@ -74,6 +92,4 @@ class TasksActivityTest {
         // Make sure the activity is closed before resetting the db.
         activityScenario.close()
     }
-
-
 }
