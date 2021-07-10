@@ -25,6 +25,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
+        android:id="@+id/drawer_header_logo"
         android:layout_width="@dimen/header_image_width"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -32,6 +33,7 @@
         android:contentDescription="@string/tasks_header_image_content_description" />
 
     <TextView
+        android:id="@+id/drawer_header_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
